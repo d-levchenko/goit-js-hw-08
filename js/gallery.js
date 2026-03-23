@@ -66,35 +66,23 @@ const images = [
 
 const imageList = document.querySelector('.gallery');
 
-for (const image of images) {
-  const { preview, original, description } = image;
+const markup = images
+  .map(
+    image =>
+      `<li class='gallery-item'><a class='gallery-link'><img class='gallery-image' src='${image.preview}' data-source='${image.original}' alt='${image.description}'></a></li>`,
+  )
+  .join('');
 
-  imageList.addEventListener('click', event => {
-    if (event.target.nodeName !== 'A') {
-      return;
-    }
-  });
+imageList.addEventListener('click', event => {
+  if (event.target.nodeName !== 'IMG') {
+    return;
+  }
 
-  imageList.insertAdjacentHTML(
-    'afterbegin',
-    `<li class='gallery-item'>
-        <a class='gallery-link' href='${original}'>
-            <img class='gallery-image' src='${preview}' data-source='${original}' alt='${description}'>
-        </a>
-    </li>`,
-  );
+  basicLightbox
+    .create(
+      `<img class='gallery-image' src='${event.target.dataset.source}' alt='${event.target.alt}'>`,
+    )
+    .show();
+});
 
-  const imageLink = document.querySelector('.gallery-link');
-
-  imageLink.addEventListener('click', event => {
-    event.preventDefault();
-
-    event.target.onclick = () => {
-      basicLightbox
-        .create(
-          `<img class='gallery-image' src='${original}' data-source='${original}' alt='${description}'>`,
-        )
-        .show();
-    };
-  });
-}
+imageList.insertAdjacentHTML('afterbegin', markup);
